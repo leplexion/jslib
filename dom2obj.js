@@ -1,5 +1,6 @@
 /*
-    用于浏览器中将 dom 结构生成 object 树结构形式.
+    仅用于浏览器
+    在浏览器中将 dom 结构生成 object 树结构形式.
 
     --- 虚荣的倒影 / Leplexion 
     --- 2022-07-10
@@ -60,6 +61,8 @@
             text:           options.hasOwnProperty('text')          ? Boolean(options.text)                                                 : true,
     
             innerText:      options.hasOwnProperty('innerText')     ? Boolean(options.innerText)                                            : false,
+
+            path:           options.hasOwnProperty('path')          ? Boolean(options.path)                                                 : true,
         };
     
         // console.log('options', options);
@@ -74,6 +77,7 @@
                 options, 
                 root : {
                     tag: 'document',
+                    ...(options.path        ? {path: '0'} : {}),
                     attrs: {
                         url:document.URL || '',
                         charSet: document.characterSet || '',
@@ -81,16 +85,16 @@
                         title: document.title || '',
                         readyState: document.readyState || ''
                     },
-                    ...(options.innerText   ? {}: {text: ''}),
-                    ...(options.text ? {}: {text: ''}),
-                    childs: []
+                    childs: [],
+                    ...(options.text        ? {}: {text: ''}),
+                    ...(options.innerText   ? {}: {innerText: ''}),
                 }
             }
         }
         else if (options.el instanceof HTMLElement){
             tree = {
                 options, 
-                root : getprops(el, options)
+                root : getprops(options.el, options, '0')
             }
         }
         else {
@@ -103,14 +107,15 @@
         return options.rootonly ? tree.root : tree; 
     }
     
-    function getprops(el, options) {
+    function getprops(el, options, curpath) {
     
         return {
             tag: el.tagName.toLowerCase(),
+            ...(options.path        ? {path: curpath} : {}),
+            attrs: getEleAttrs(el, options),
+            childs: [],
             ...(options.text        ? {text: getEleTextTop(el)}: {}),
             ...(options.innerText   ? {innerText: ( el.hasOwnProperty('innerText') ? el.innerText.trim() : '' )} : {}),
-            attrs: getEleAttrs(el, options),
-            childs: []
         }
     
     }
@@ -153,16 +158,17 @@
         var rootobj = tree.root;
         var options = tree.options;
         var level = 0
+        var path = '0'
         var maxlevel = tree.options.maxlevel;
     
         if (maxlevel == 0) {
             return tree;
         }
         else {
-            build(rootel, rootobj, options, level, maxlevel);
+            build(rootel, rootobj, options, level, maxlevel, path);
             return tree;
         }
-        function build(el, obj, options, level, maxlevel) {
+        function build(el, obj, options, level, maxlevel, path) {
             level += 1;
     
             for (var i = 0; i < el.children.length; i++) {
@@ -170,11 +176,11 @@
                 if ( options.ignoreTags.length > 0 && options.ignoreTags.includes(cel.tagName.toLowerCase()) ) {
                     continue
                 }
-    
-                var cobj = getprops(cel, options);
+                var curpath = path + ',' + i;
+                var cobj = getprops(cel, options, curpath);
                 obj.childs.push(cobj);
                 if ( (maxlevel == -1) || (level < maxlevel) ) {
-                    build(cel, cobj, options, level, maxlevel)
+                    build(cel, cobj, options, level, maxlevel, curpath)
                 }
             }
         }

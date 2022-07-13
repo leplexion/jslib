@@ -1,4 +1,7 @@
-// 用于隐藏 控制台输出 object 中的 [[prototype]], 如: console.debug({a:1, b: {c: 2}})
+/*
+    仅用于浏览器, 输出函数, 隐藏 控制台输出 object 中的 [[prototype]]
+    console.debug( {a:1, b: {c: 2}} )
+*/
 console.debug = function() {
     function clear(o) {
         var obj = JSON.parse(JSON.stringify(o));
