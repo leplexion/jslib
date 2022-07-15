@@ -1,12 +1,3 @@
-/*
-    仅用于浏览器
-    在浏览器中将 dom 结构生成 object 树结构形式.
-
-    --- 虚荣的倒影 / Leplexion 
-    --- 2022-07-10
-*/
-
-
 dom2obj = function(options, cb) {
     /* cb 递归时回调, 符合条件的元素传入cb函数, (elobj, el, options, path)=> { } */
     if (!options || options == window.document) {

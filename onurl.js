@@ -4,7 +4,6 @@ function testurl(url) {
     }
 }
 
-
 async function onurlAsync(url, asynccb) {
     var BLACK_URL = 'about:blank';
     var currentUrl = '';
@@ -13,8 +12,8 @@ async function onurlAsync(url, asynccb) {
     } else {
         currentUrl = window.location.hostname + window.location.pathname;
     }
-    console.log('onurl当前判断网址:[' + currentUrl + ']')
-    var res = false
+    console.log('onurlAsync当前判断网址:[  ' + currentUrl + '  ], 被判断网址[' + url + ']')
+    var res = null
         // 空白页
         || (currentUrl == BLACK_URL && (url.toLowerCase() == BLACK_URL || url.toLowerCase() == 'blank'))
         // 直接等于
@@ -22,23 +21,34 @@ async function onurlAsync(url, asynccb) {
         // 正则判断
         || ((url instanceof RegExp) && url.test(currentUrl));
     res = res && (await asynccb());
-
+    return res
 }
 
 function onurl(url, cb) {
-    
+    console.log('onurl当前判断网址:[  ' + currentUrl + '  ], 被判断网址[' + url + ']')
     if (window.location.href == 'about:blank') {
-        console.log('onurl当前判断网址:[' + window.location.href + ']')
         if (url == 'blank' || url == 'about:blank') {
             return cb();
         }
     }
     else if (window.location.hostname + window.location.pathname == url) {
-        console.log('onurl当前判断网址:[' + (window.location.hostname + window.location.pathname) + ']')
         return cb();
     }
-    else {
-        console.log('onurl当前判断网址:[' + (window.location.hostname + window.location.pathname) + ']')
-        // throw Error('未知的网址' + (window.location.hostname + window.location.pathname));
+    return null;
+}
+
+function onurlblank(cb) {
+    var href = window.location.href || (window.location.hostname + window.location.pathname);
+    console.log('onurlblank当前判断网址:[  ' +window.location.hostname + window.location.pathname + '  ], 被判断网址[about:blank]')
+    if (href == 'about:blank') {
+            return cb();
+    }
+}
+
+async function onurlblankAsync(cb) {
+    var href = window.location.href || (window.location.hostname + window.location.pathname);
+    console.log('onurlblankAsync当前判断网址:[  ' +window.location.hostname + window.location.pathname + '  ], 被判断网址[about:blank]')
+    if (href == 'about:blank') {
+        return await cb();
     }
 }

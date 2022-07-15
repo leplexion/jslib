@@ -1,3 +1,31 @@
+/* -------------------------------------------------------------------*/
+function isdomready() {
+    return document.readyState == 'complete';
+}
+/* -------------------------------------------------------------------*/
+function elSetStyle(el, style) { /* 清除元素的style */
+    el.setAttribute('style', style)
+}
+function elSetStyleEmpty(el) {  /* 清除元素的style */
+    el.setAttribute('style', '')
+}
+function elSetStyleLT0(el) { /* 将元素置于屏幕左上角 */
+    el.setAttribute('style', 'position: fixed; z-index: 99999; left:0;top:0;')
+}
+function elGetPosRelView(el) { /* 获取元素相对视口坐上角 */
+    return {
+        x: el.getBoundingClientRect().left,
+        y: el.getBoundingClientRect().top
+    }
+}
+function elExistId(id) {
+    return Boolean(document.getElementById(id));
+}
+
+function elExistClass(class_) {
+    return document.getElementsByClassName(class_).length > 0;
+}
+
 function setidval(id, val) {
     var el = document.getElementById(id);
     if (el) {
@@ -7,49 +35,33 @@ function setidval(id, val) {
         return false;
     }
 }
-
-function getdomstate() {
-    return document.readyState;
+/* -------------------------------------------------------------------*/
+function scrollgetpos() {   /* 获取滚动条坐标 */
+    return {
+        x: window.scrollX,
+        y: widnow.scrollY
+    }
+}
+function scroll2(x, y) {    /* 移动滚动条 */
+    window.scrollTo(x, y)
+}
+function scroll2top() {   
+    window.scrollTo(window.scrollX, 0)
+}
+function scroll2bottom() {
+    window.scrollTo(window.scrollX, document.body.scrollHeight)
+}
+function scroll2left() {
+    window.scrollTo(0, widnow.scrollY)
+}
+function scroll2right() {
+    window.scrollTo(document.body.scrollWidth, widnow.scrollY)
+}
+/* -------------------------------------------------------------------*/
+function viewGetSize() { /* 获取视口的尺寸 */
+    return {
+        w: window.innerWidth,
+        h: window.innerHeight
+    }
 }
 
-function isdomready() {
-    return document.readyState == 'complete';
-}
-
-function isIdExist(id) {
-    return Boolean(document.getElementById(id));
-}
-function isClassExist(classname) {
-    return Boolean(document.getElementsByClassName(classname).length > 0);
-}
-
-function bodyappend(html) {
-    var el = document.createElement('div');
-    el.innerHTML = html;
-    document.body.appendChild(el);
-}
-
-function bodyAppendTipTop(txt) {
-    bodyappend(`
-<div style="
-padding: 10px;
-position: fixed;
-text-align: center;
-width: 100%;
-top: 0;
-left: 0;
-z-index: 9999999;
-">
-<div style="
-display: inline-block;
-padding: 10px 30px;
-border-radius: 5px;
-font-size: 13px;
-background-color: #ff0000cc;
-color: #ffffe5;
-">
-        ${txt}
-    </div>
-</div>
-`);
-}
