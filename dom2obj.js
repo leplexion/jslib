@@ -1,4 +1,7 @@
-dom2obj = function(options, cb) {
+/*
+    dom2obj('',(cobj, cel, curpath, options)=> {});
+*/
+var dom2obj = function(options, cb) {
     /* cb 递归时回调, 符合条件的元素传入cb函数, (elobj, el, options, path)=> { } */
     if (!options || options == window.document) {
         options = {el: window.document}; 
@@ -99,6 +102,9 @@ dom2obj = function(options, cb) {
     if (options.cb) { options.cb(tree.root, options.el, '0', options); }
 
     tree = buildTree(tree);
+    if (tree.hasOwnProperty('cbres')) {
+        return null;
+    }
 
     return options.rootonly ? tree.root : tree; 
 }
@@ -156,18 +162,25 @@ function buildTree(tree) {
     var level = 0
     var path = '0'
     var maxlevel = tree.options.maxlevel;
+    var cbres = undefined;
 
     if (maxlevel == 0) {
         return tree;
     }
     else {
         build(rootel, rootobj, options, level, maxlevel, path);
+        if (cbres != undefined) { tree.cbres = cbres; }
         return tree;
     }
-    function build(el, obj, options, level, maxlevel, path) {
-        level += 1;
 
+    
+
+    function build(el, obj, options, level, maxlevel, path) {
+        if (cbres) { return; }
+        level += 1;
+        
         for (var i = 0; i < el.children.length; i++) {
+            if (cbres) { return; }
             var cel = el.children[i];
             if ( options.ignoreTags.length > 0 && options.ignoreTags.includes(cel.tagName.toLowerCase()) ) {
                 continue
@@ -175,7 +188,9 @@ function buildTree(tree) {
             var curpath = path + ',' + i;
             var cobj = getprops(cel, options, curpath);
 
-            if (options.cb) { options.cb(cobj, cel, curpath, options); }
+            if (options.cb) { cbres = options.cb(cobj, cel, curpath, options); }
+
+            if (cbres) { return; }
 
             obj.childs.push(cobj);
             if ( (maxlevel == -1) || (level < maxlevel) ) {

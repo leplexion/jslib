@@ -25,6 +25,13 @@ async function onurlAsync(url, asynccb) {
 }
 
 function onurl(url, cb) {
+    var BLACK_URL = 'about:blank';
+    var currentUrl = '';
+    if (window.location.href == BLACK_URL) {
+        currentUrl = BLACK_URL;
+    } else {
+        currentUrl = window.location.hostname + window.location.pathname;
+    }
     console.log('onurl当前判断网址:[  ' + currentUrl + '  ], 被判断网址[' + url + ']')
     if (window.location.href == 'about:blank') {
         if (url == 'blank' || url == 'about:blank') {
